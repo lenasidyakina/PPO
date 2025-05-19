@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ML_port implements IML_port {
-    public static Map<String, String> parseJson(String jsonStr) {
+    private static Map<String, String> parseJson(String jsonStr) {
         Map<String, String> result = new LinkedHashMap<>();
 
         jsonStr = jsonStr.trim();

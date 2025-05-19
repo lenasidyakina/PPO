@@ -130,9 +130,11 @@ class RecManagerTest {
                                 new ArrayList<Tag>(Arrays.asList(new Tag(3, "sleeping")))))));
         Questionnaire questionnaire = new Questionnaire(1, info, info_search);
         RecManager rec_manager = new RecManager(new QuestionnaireController(iml_port, questionnaire_repository));
-        List<Questionnaire> recommendations = rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire));
+        //List<Questionnaire> recommendations = rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire));
+        rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire));
         Questionnaire questionnaire_test = new Questionnaire(1, info, info_search);
-        assertEquals(recommendations.getFirst() , questionnaire_test);
+        //assertEquals(((rec_manager.get_req_cache()).getFirst()) , questionnaire_test);
+        assertEquals(rec_manager.get_req_cache().getFirst().getValue(), questionnaire_test);
     }
 
     @Test
@@ -207,9 +209,12 @@ class RecManagerTest {
         Questionnaire questionnaire_2 = new Questionnaire(2, info_2, info_search_2);
 
         RecManager rec_manager = new RecManager(new QuestionnaireController(iml_port, questionnaire_repository));
-        List<Questionnaire> recommendations = rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire_1, questionnaire_2));
+        //List<Questionnaire> recommendations = rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire_1, questionnaire_2));
         Questionnaire questionnaire_test = new Questionnaire(1, info_1, info_search_1);
-        assertEquals(recommendations.getFirst() , questionnaire_test);
+        rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire_1, questionnaire_2));
+        //assertEquals(((rec_manager.get_req_cache()).getFirst()) , questionnaire_test);
+        assertEquals(rec_manager.get_req_cache().getFirst().getValue(), questionnaire_test);
+        //assertEquals(recommendations.getFirst() , questionnaire_test);
     }
 
     @Test
@@ -313,8 +318,10 @@ class RecManagerTest {
         Questionnaire questionnaire_2 = new Questionnaire(2, info_2, info_search_2);
 
         RecManager rec_manager = new RecManager(new QuestionnaireController(iml_port, questionnaire_repository));
-        List<Questionnaire> recommendations = rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire_2, questionnaire_1));
+        rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire_2, questionnaire_1));
+        //List<Questionnaire> recommendations = rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire_2, questionnaire_1));
         Questionnaire questionnaire_test = new Questionnaire(1, info_1, info_search_1);
-        assertEquals(recommendations.getFirst() , questionnaire_test);
+        //assertEquals(recommendations.getFirst() , questionnaire_test);
+        assertEquals(rec_manager.get_req_cache().getFirst().getValue(), questionnaire_test);
     }
 }

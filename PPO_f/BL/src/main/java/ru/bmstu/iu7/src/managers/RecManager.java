@@ -7,15 +7,35 @@ import java.util.*;
 
 public class RecManager {
     private final QuestionnaireController m_controller;
+    //private List<Questionnaire> m_req_cache;
+    private final List<Map.Entry<Double, Questionnaire>> m_req_cache = new ArrayList<>();
 
+    public List<Map.Entry<Double, Questionnaire>> get_req_cache() {
+        return m_req_cache;
+    }
     public RecManager(QuestionnaireController controller) {
         this.m_controller = controller;
     }
 
     public List<Questionnaire> get_friends() throws Exception {
-        List<Questionnaire> all = m_controller.get_questionnairies();
-        Questionnaire current = m_controller.get_active_questionnaire();
-        return recommended_questionnaires(current, all);
+        List<Questionnaire> all;
+        int lower = 0;
+        int upper = 1000;
+        do{
+            all = m_controller.get_questionnairies(lower, upper);
+            if ((lower == 0) && (all.size() < 0))
+                return all;
+            Questionnaire current = m_controller.get_active_questionnaire();
+            recommended_questionnaires(current, all);
+            lower += 1000;
+            upper += 1000;
+        } while (!all.isEmpty());
+        m_req_cache.sort((e1, e2) -> e2.getKey().compareTo(e1.getKey()));
+
+        List<Questionnaire> sortedList = m_req_cache.stream()
+                .map(Map.Entry::getValue)
+                .toList();
+        return sortedList.subList(0, 1);
     }
 
     public int information_comparison(Information self, Information other) throws Exception {
@@ -50,30 +70,33 @@ public class RecManager {
     }
 
 
-    public List<Questionnaire> recommended_questionnaires(Questionnaire current, List<Questionnaire> all) throws Exception {
-        if (all.size() < 0){
-            return all;
-        }
-        List<Map.Entry<Double, Questionnaire>> similarityList = new ArrayList<>();
+    public void recommended_questionnaires(Questionnaire current, List<Questionnaire> all) throws Exception {
         double harmonic_average;
+        double max_harmonic_average;
+        double harmonic_average_norm;
+        int count_extnd_tags = 3;
+        int count_var_tags = 1;
         for (Questionnaire questionnaire : all) {
             int first_similarity_coeff = information_comparison(current.get_information(), questionnaire.get_search_information());
             int second_similarity_coeff = information_comparison(current.get_search_information(), questionnaire.get_information());
 
             if (first_similarity_coeff + second_similarity_coeff == 0)
-                harmonic_average = 0;
-            else
-                harmonic_average = (double)(2 * first_similarity_coeff * second_similarity_coeff) / (first_similarity_coeff + second_similarity_coeff);
-
-            similarityList.add(new AbstractMap.SimpleEntry<>(harmonic_average, questionnaire));
+                harmonic_average_norm = 0;
+            else {
+                harmonic_average = (double) (2 * first_similarity_coeff * second_similarity_coeff) / (first_similarity_coeff + second_similarity_coeff);
+                max_harmonic_average = 10 * (count_extnd_tags + count_var_tags);
+                harmonic_average_norm = harmonic_average / max_harmonic_average;
+            }
+            if ((harmonic_average_norm > 0.25) && (!m_controller.is_in_black(questionnaire) && (!m_controller.is_in_fav(questionnaire))))
+                m_req_cache.add(new AbstractMap.SimpleEntry<>(harmonic_average_norm, questionnaire));
         }
 
-        similarityList.sort((e1, e2) -> e2.getKey().compareTo(e1.getKey()));
-
-        List<Questionnaire> sortedList = similarityList.stream()
-                .map(Map.Entry::getValue)
-                .toList();
-        return sortedList.subList(0, 1);
+//        m_req_cache.sort((e1, e2) -> e2.getKey().compareTo(e1.getKey()));
+//
+//        List<Questionnaire> sortedList = m_req_cache.stream()
+//                .map(Map.Entry::getValue)
+//                .toList();
+//        return sortedList.subList(0, 1);
     }
 
 

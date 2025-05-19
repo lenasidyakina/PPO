@@ -34,7 +34,12 @@ public class QuestionnaireRepository implements IQuestionnaireRepository {
     }
 
     @Override
-    public List<Questionnaire> findAll() {
+    public List<Questionnaire> find_interval(int lower, int upper) {
+        return List.of();
+    }
+
+    @Override
+    public List<Questionnaire> find_user_questionnaire(int id) throws Exception {
         return List.of();
     }
 }

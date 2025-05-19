@@ -12,5 +12,6 @@ public interface IQuestionnaireRepository {
     Questionnaire delete(int id) throws Exception;
     Questionnaire delete(Questionnaire questionnaire) throws Exception;
     Questionnaire update(Questionnaire questionnaire) throws Exception;
-    List<Questionnaire> findAll();
+    List<Questionnaire> find_interval(int lower, int upper);
+    List<Questionnaire> find_user_questionnaire(int id) throws Exception;
 }

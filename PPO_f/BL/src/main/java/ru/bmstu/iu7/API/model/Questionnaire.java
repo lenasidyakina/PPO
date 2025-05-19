@@ -23,9 +23,18 @@ public class Questionnaire {
     {
         fav_list.add(questionnaire);
     }
+    public List<Questionnaire> get_black_list(){
+        return black_list;
+    }
+    public List<Questionnaire> get_fav_list(){
+        return fav_list;
+    }
     public void add_black(Questionnaire questionnaire)
     {
         black_list.add(questionnaire);
+    }
+    public int get_id() {
+        return id;
     }
     public void set_censored(boolean censored){
         this.censored = censored;
