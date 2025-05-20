@@ -3,6 +3,7 @@ package ru.bmstu.iu7.src.managers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.bmstu.iu7.API.IML_port;
 import ru.bmstu.iu7.API.IQuestionnaireRepository;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RecManagerTest {
@@ -83,7 +85,7 @@ class RecManagerTest {
     }
 
     @Test
-    void recommended_questionnaires() throws Exception {
+    void get_friends() throws Exception {
         Information cur_info = new Information(0,
                 new ArrayList<VariantAnswer>(Arrays.asList(
                         new VariantAnswer(2, new Tag(0, "walking"),
@@ -129,6 +131,8 @@ class RecManagerTest {
                                         Arrays.asList(new Tag(2, "walking"), new Tag(3, "sleeping")))) ,2, "I like walking my dog and sleeping",
                                 new ArrayList<Tag>(Arrays.asList(new Tag(3, "sleeping")))))));
         Questionnaire questionnaire = new Questionnaire(1, info, info_search);
+        Mockito.lenient().doReturn(List<Questionnaire>.of(cur_questionnaire, questionnaire)).when(questionnaire_repository).find_interval(0, 1000);
+
         RecManager rec_manager = new RecManager(new QuestionnaireController(iml_port, questionnaire_repository));
         //List<Questionnaire> recommendations = rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire));
         rec_manager.recommended_questionnaires(cur_questionnaire, List.of(questionnaire));

@@ -2,24 +2,31 @@ package ru.bmstu.iu7.src.controllers;
 
 import ru.bmstu.iu7.API.IML_port;
 import ru.bmstu.iu7.API.IQuestionnaireRepository;
+import ru.bmstu.iu7.API.IReqCacheRepository;
 import ru.bmstu.iu7.API.model.ExtendedAnswer;
 import ru.bmstu.iu7.API.model.Information;
 import ru.bmstu.iu7.API.model.Questionnaire;
+import ru.bmstu.iu7.API.model.ReqCache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class QuestionnaireController
 {
     private final IML_port m_ml;
     private Questionnaire m_active_questionnaire;
+    private ReqCache m_req_cache;
     private IQuestionnaireRepository m_questionnaireRepository;
+    private IReqCacheRepository m_req_cache_repository;
 
 
-    public QuestionnaireController(IML_port imlPort, IQuestionnaireRepository questionnaireRepo)
+    public QuestionnaireController(IML_port imlPort, IQuestionnaireRepository questionnaireRepo, IReqCacheRepository reqCacheRepo)
     {
         this.m_questionnaireRepository = questionnaireRepo;
         this.m_ml = imlPort;
+        this.m_req_cache_repository = reqCacheRepo;
     }
 
     public List<Questionnaire> get_user_questionnaies(int id) throws Exception {
@@ -82,5 +89,28 @@ public class QuestionnaireController
 
     public List<Questionnaire> get_questionnairies(int lower, int upper) throws Exception {
         return m_questionnaireRepository.find_interval(lower, upper);
+    }
+
+    public void add_in_cache_list(double harmonic_average_norm, int id_quest) throws Exception {
+        m_req_cache_repository.insert(id_quest, harmonic_average_norm);
+    }
+
+    public void sort_req_cache() throws Exception {
+        List<Map.Entry<Integer, Double>> req_cache = m_req_cache_repository.findAll(m_active_questionnaire.get_id());
+        req_cache.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
+        int limit = Math.min(500, req_cache.size());
+        m_req_cache.setM_req_cache(req_cache.subList(0,limit));
+    }
+
+    public List<Questionnaire> get_quest_in_cache() throws Exception {
+        List<Questionnaire> rec_quest = new ArrayList<>();
+        List<Integer> rec_quest_id = m_req_cache.get_req_cache().stream()
+                .limit(100)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        for (int id : rec_quest_id){
+            rec_quest.add(m_questionnaireRepository.findQuestionnaire(id));
+        }
+        return rec_quest.subList(0, 1);
     }
 }

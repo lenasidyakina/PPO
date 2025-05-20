@@ -5,38 +5,56 @@ import ru.bmstu.iu7.src.controllers.QuestionnaireController;
 
 import java.util.*;
 
+
 public class RecManager {
     private final QuestionnaireController m_controller;
-    //private List<Questionnaire> m_req_cache;
-    private final List<Map.Entry<Double, Questionnaire>> m_req_cache = new ArrayList<>();
+    //private final List<Map.Entry<Double, Questionnaire>> m_req_cache = new ArrayList<>();
 
-    public List<Map.Entry<Double, Questionnaire>> get_req_cache() {
-        return m_req_cache;
+    public class ScheduledTask extends TimerTask {
+
+        public void run() {
+            List<Questionnaire> all;
+            int lower = 0;
+            int upper = 1000;
+            Questionnaire current = m_controller.get_active_questionnaire();
+            do{
+                try {
+                    all = m_controller.get_questionnairies(lower, upper);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    recommended_questionnaires(current, all);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                lower += 1000;
+                upper += 1000;
+                //m_req_cache.sort((e1, e2) -> e2.getKey().compareTo(e1.getKey()));
+//                if (m_req_cache.size() > 500) {
+//                    m_req_cache.subList(500, m_req_cache.size()).clear();
+//                }
+            } while (!all.isEmpty());
+        }
     }
+
     public RecManager(QuestionnaireController controller) {
         this.m_controller = controller;
+
+        Timer time = new Timer();
+        ScheduledTask st = new ScheduledTask();
+        time.schedule(st, 0, 1000 * 60 * 30);
     }
 
     public List<Questionnaire> get_friends() throws Exception {
-        List<Questionnaire> all;
-        int lower = 0;
-        int upper = 1000;
-        do{
-            all = m_controller.get_questionnairies(lower, upper);
-            if ((lower == 0) && (all.size() < 0))
-                return all;
-            Questionnaire current = m_controller.get_active_questionnaire();
-            recommended_questionnaires(current, all);
-            lower += 1000;
-            upper += 1000;
-        } while (!all.isEmpty());
-        m_req_cache.sort((e1, e2) -> e2.getKey().compareTo(e1.getKey()));
-
-        List<Questionnaire> sortedList = m_req_cache.stream()
-                .map(Map.Entry::getValue)
-                .toList();
-        return sortedList.subList(0, 1);
+//        List<Questionnaire> sortedList = m_req_cache.stream()
+//               .map(Map.Entry::getValue)
+//                .toList();
+//        return sortedList.subList(0, 1);
+        m_controller.sort_req_cache();
+        return m_controller.get_quest_in_cache();
     }
+
 
     public int information_comparison(Information self, Information other) throws Exception {
         List<ExtendedAnswer> ex_answer_1 = self.getExtended_answers();
@@ -88,15 +106,9 @@ public class RecManager {
                 harmonic_average_norm = harmonic_average / max_harmonic_average;
             }
             if ((harmonic_average_norm > 0.25) && (!m_controller.is_in_black(questionnaire) && (!m_controller.is_in_fav(questionnaire))))
-                m_req_cache.add(new AbstractMap.SimpleEntry<>(harmonic_average_norm, questionnaire));
+                //m_req_cache.add(new AbstractMap.SimpleEntry<>(harmonic_average_norm, questionnaire));
+                m_controller.add_in_cache_list(harmonic_average_norm, questionnaire.get_id());
         }
-
-//        m_req_cache.sort((e1, e2) -> e2.getKey().compareTo(e1.getKey()));
-//
-//        List<Questionnaire> sortedList = m_req_cache.stream()
-//                .map(Map.Entry::getValue)
-//                .toList();
-//        return sortedList.subList(0, 1);
     }
 
 
