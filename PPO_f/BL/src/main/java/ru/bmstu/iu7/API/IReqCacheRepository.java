@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IReqCacheRepository {
-    ReqCache insert(int id_quest, double harmonic_average_norm) throws Exception;
-    List<Map.Entry<Integer, Double>> findAll(int id_cur_quest) throws Exception;
+    ReqCache insert(Long id_quest, double harmonic_average_norm) throws Exception;
+    void delete(Long id_quest) throws Exception;
+    List<Map.Entry<Long, Double>> findAll(Long id_cur_quest) throws Exception;
 }

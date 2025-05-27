@@ -1,7 +1,7 @@
 package ru.bmstu.iu7;
 
 import ru.bmstu.iu7.API.IML_port;
-import ru.bmstu.iu7.API.model.Tag;
+import ru.bmstu.iu7.API.model.ITag;
 
 import java.io.IOException;
 import java.net.URI;
@@ -77,9 +77,9 @@ public class ML_port implements IML_port {
         return str;
     }
     @Override
-    public List<Tag> get_tags_names(String question, String answer, List<Tag> tags) throws IOException, InterruptedException {
+    public List<ITag> get_tags_names(String question, String answer, List<ITag> tags) throws IOException, InterruptedException {
         StringBuilder tags_name_list = new StringBuilder();
-        for (Tag tag : tags) {
+        for (ITag tag : tags) {
             tags_name_list.append(tag.getName());
             tags_name_list.append(",");
         }
@@ -118,9 +118,9 @@ public class ML_port implements IML_port {
 
         System.out.println(tags_names);
         System.out.println(tags);
-        List<Tag> answer_tags = new ArrayList<>();
+        List<ITag> answer_tags = new ArrayList<>();
         for (String tag_name : tags_names) {
-             for (Tag tag : tags){
+             for (ITag tag : tags){
                 if ((tag.getName()).equals(tag_name)) {
                     answer_tags.add(tag);
                 }

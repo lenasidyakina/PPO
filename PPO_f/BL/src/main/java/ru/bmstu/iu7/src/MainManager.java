@@ -1,19 +1,15 @@
 package ru.bmstu.iu7.src;
 
-import ru.bmstu.iu7.API.IML_port;
-import ru.bmstu.iu7.API.IQuestionnaireRepository;
-import ru.bmstu.iu7.API.IReqCacheRepository;
-import ru.bmstu.iu7.API.IUserRepository;
-import ru.bmstu.iu7.API.model.User;
+import ru.bmstu.iu7.API.*;
 import ru.bmstu.iu7.src.controllers.QuestionnaireController;
 import ru.bmstu.iu7.src.managers.QuestionnaireManager;
 import ru.bmstu.iu7.src.managers.RecManager;
 import ru.bmstu.iu7.src.managers.UserManager;
 
 public class MainManager {
-    public MainManager(IML_port imlPort, IUserRepository user_repo, IQuestionnaireRepository questionnaire_repo, IReqCacheRepository reqCacheRepo) throws Exception
+    public MainManager(IML_port imlPort, IUserRepository user_repo, IQuestionnaireRepository questionnaire_repo, IReqCacheRepository reqCacheRepo, IQuestionRepository questionRepository) throws Exception
     {
-        QuestionnaireController controller = new QuestionnaireController(imlPort, questionnaire_repo, reqCacheRepo);
+        QuestionnaireController controller = new QuestionnaireController(imlPort, questionnaire_repo, reqCacheRepo, questionRepository);
         m_user_manager = new UserManager(user_repo);
         m_que_manager = new QuestionnaireManager(controller);
         m_rec_manager = new RecManager(controller);

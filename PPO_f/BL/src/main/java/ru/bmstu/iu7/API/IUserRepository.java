@@ -1,11 +1,11 @@
 package ru.bmstu.iu7.API;
 
-import ru.bmstu.iu7.API.model.User;
+
+import ru.bmstu.iu7.API.model.IUser;
 
 public interface IUserRepository {
-    User createUser(String name, String password) throws Exception;
-    User findUser(String name, String password) throws Exception;
-    User delete(int id) throws Exception;
-    User update(User user) throws Exception;
-
+    IUser createUser(String name, String password) throws Exception;
+    IUser findUser(String name, String password) throws Exception;
+    void delete(Long id) throws Exception;
+    IUser update(IUser user) throws Exception;
 }
